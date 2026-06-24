@@ -152,19 +152,28 @@ def logout(response: Response):
 
 
 class TestNotifyIn(BaseModel):
-    email: str
+    email: str | None = None
 
 
 @app.post("/api/notify/test")
-def notify_test(body: TestNotifyIn, pwdsession: str = Cookie(None)):
-    _require_user(pwdsession)
+def notify_test(response: Response, pwdsession: str = Cookie(None),
+                body: TestNotifyIn | None = None):
+    user = _require_user(pwdsession)
     if not config.LARK_ENABLED:
         raise HTTPException(503, "ยังไม่ได้ตั้งค่า Lark")
-    oid = lark.open_id_by_email(body.email)
+    st = _status_or_500(user)
+    email = body.email if (body and body.email) else st.get("mail")
+    if not email:
+        raise HTTPException(400, "บัญชีนี้ไม่มีอีเมลใน AD")
+    oid = lark.open_id_by_email(email)
     if not oid:
-        raise HTTPException(404, "ไม่พบผู้ใช้ใน Lark ตามอีเมลนี้")
-    lark.send_expiry_card(oid, "ผู้ทดสอบ", 7, "ทดสอบระบบ")
-    return {"ok": True}
+        raise HTTPException(404, f"ไม่พบบัญชี Lark ตามอีเมล {email} — ตรวจ Availability ของแอป "
+                                 f"และอีเมลใน Lark ให้ตรงกับ AD")
+    days = st.get("days_left", 0)
+    lark.send_expiry_card(oid, st.get("display_name") or user,
+                          days if days < 9999 else 0, st.get("expiry_date", "-"))
+    _set_session(response, user)
+    return {"ok": True, "email": email, "open_id": oid}
 
 
 @app.post("/api/notify/run")
