@@ -22,7 +22,7 @@ services:
       - LARK_APP_SECRET=${LARK_APP_SECRET}
       # --- การแจ้งเตือน ---
       - NOTIFY_DAYS=${NOTIFY_DAYS:-14,7,3,1}
-      - NOTIFY_HOUR=${NOTIFY_HOUR:-9}
+      - NOTIFY_HOUR=${NOTIFY_HOUR:-14}
       - PORTAL_URL=${PORTAL_URL}
       # --- Session ---
       - SESSION_SECRET=${SESSION_SECRET:-}
