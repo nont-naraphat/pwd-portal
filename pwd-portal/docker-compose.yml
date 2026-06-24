@@ -24,6 +24,9 @@ services:
       - NOTIFY_DAYS=${NOTIFY_DAYS:-14,7,3,1}
       - NOTIFY_HOUR=${NOTIFY_HOUR:-9}
       - PORTAL_URL=${PORTAL_URL}
+      # --- Session ---
+      - SESSION_SECRET=${SESSION_SECRET:-}
+      - SESSION_TIMEOUT_MIN=${SESSION_TIMEOUT_MIN:-30}
     # ให้คอนเทนเนอร์ resolve ชื่อ DC ไปที่ IP ภายใน (cert ยังตรวจตามชื่อได้)
     extra_hosts:
       - "${AD_HOST}:${AD_IP}"
