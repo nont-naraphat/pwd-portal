@@ -25,7 +25,7 @@ LARK_APP_SECRET = os.getenv("LARK_APP_SECRET", "")
 
 # --- การแจ้งเตือน ---
 NOTIFY_DAYS = [int(x) for x in os.getenv("NOTIFY_DAYS", "14,7,3,1").split(",") if x.strip()]
-NOTIFY_HOUR = int(os.getenv("NOTIFY_HOUR", "9"))
+NOTIFY_HOUR = int(os.getenv("NOTIFY_HOUR", "14"))
 PORTAL_URL  = os.getenv("PORTAL_URL", "https://pwd.bearhouse.sunsu.local")
 
 LARK_ENABLED = bool(LARK_APP_ID and LARK_APP_SECRET)
