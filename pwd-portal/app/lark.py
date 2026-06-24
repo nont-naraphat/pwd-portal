@@ -1,10 +1,13 @@
 """ส่งการ์ดแจ้งเตือนเข้า Lark ผ่าน Custom App (tenant_access_token)"""
 import json
 import time
+import logging
 
 import httpx
 
 from . import config
+
+log = logging.getLogger("lark")
 
 _token = {"value": None, "exp": 0}
 
@@ -21,7 +24,9 @@ def _get_token() -> str:
     )
     d = r.json()
     if d.get("code") != 0:
+        log.error("ขอ tenant_access_token ไม่สำเร็จ: %s", d)
         raise RuntimeError(f"ขอ token ไม่สำเร็จ: {d}")
+    log.info("ได้ tenant_access_token แล้ว")
     _token["value"] = d["tenant_access_token"]
     _token["exp"] = time.time() + d.get("expire", 7200)
     return _token["value"]
@@ -35,8 +40,17 @@ def open_id_by_email(email: str):
         json={"emails": [email]},
         timeout=10,
     )
-    users = r.json().get("data", {}).get("user_list", [])
-    return users[0].get("user_id") if users and users[0].get("user_id") else None
+    resp = r.json()
+    if resp.get("code") != 0:
+        log.error("หา user จากอีเมลไม่ได้ (อาจขาด scope/contact): email=%s resp=%s", email, resp)
+        return None
+    users = resp.get("data", {}).get("user_list", [])
+    oid = users[0].get("user_id") if users and users[0].get("user_id") else None
+    if not oid:
+        log.warning("ไม่พบ Lark user ตามอีเมลนี้ (อีเมล AD อาจไม่ตรงกับ Lark): email=%s resp=%s", email, resp)
+    else:
+        log.info("พบ Lark user: email=%s open_id=%s", email, oid)
+    return oid
 
 
 def _card(name: str, days: int, expiry_date: str) -> dict:
@@ -74,5 +88,7 @@ def send_expiry_card(open_id: str, name: str, days: int, expiry_date: str):
     )
     d = r.json()
     if d.get("code") != 0:
+        log.error("ส่งการ์ดเข้า Lark ไม่สำเร็จ: open_id=%s resp=%s", open_id, d)
         raise RuntimeError(f"ส่งข้อความไม่สำเร็จ: {d}")
+    log.info("ส่งการ์ดเข้า Lark สำเร็จ: open_id=%s", open_id)
     return True
