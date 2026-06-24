@@ -50,6 +50,13 @@ a{color:inherit;text-decoration:none}
 input[type=text],input[type=password]{width:100%;height:46px;border:1px solid var(--line-2);border-radius:var(--r);
   padding:0 14px;font-size:14.5px;color:var(--txt);background:var(--surface);transition:border-color .15s,box-shadow .15s}
 .iw input{padding-left:44px}
+input.err{border-color:#ef4444!important;background:#fef2f2!important}
+input.err:focus{box-shadow:0 0 0 3px rgba(239,68,68,.15)!important}
+.field.has-err{animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.err-msg{display:none;font-size:12px;color:#ef4444;margin-top:7px;align-items:center;gap:5px;font-weight:500}
+.field.has-err .err-msg{display:flex}
+.field.has-err .hint{display:none}
 .iw .toggle{position:absolute;right:8px;background:none;border:none;color:var(--txt-3);padding:9px;border-radius:8px;display:flex}
 .iw .toggle:hover{color:var(--txt-2);background:var(--surface-2)}
 input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(91,84,224,.15)}
@@ -186,7 +193,7 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
 .sched{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
 .cpill{height:34px;padding:0 14px;border-radius:99px;border:1px solid var(--line-2);background:var(--surface);font-size:13px;font-weight:500;color:var(--txt-2)}
 .cpill.on{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand)}
-.cpill.ro{display:inline-flex;align-items:center;background:#f1f5f9;border-color:#e2e8f0;color:#94a3b8;cursor:default;user-select:none}
+.cpill.ro{display:inline-flex;align-items:center;background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand);opacity:.6;cursor:default;user-select:none}
 .lark-msg{max-width:340px}
 .lark-from{display:flex;align-items:center;gap:9px;margin-bottom:11px}
 .lark-from .bot{width:34px;height:34px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;flex:none}
@@ -266,6 +273,7 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M9.9 5.2A9.5 9.5 0 0112 5c6.5 0 10 7 10 7a17 17 0 01-2.2 3M6.2 6.2A17 17 0 002 12s3.5 7 10 7a9.5 9.5 0 003.3-.6"/><path d="M3 3l18 18M9.9 9.9a3 3 0 004.2 4.2"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l9 16H3l9-16z"/><path d="M12 10v4m0 3v.01"/></symbol>
   <symbol id="i-circle-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></symbol>
   <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4V5z"/></symbol>
@@ -291,14 +299,16 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
     <div class="field">
       <label for="u">ชื่อผู้ใช้</label>
       <div class="iw"><span class="pre"><svg class="icon" style="width:18px;height:18px"><use href="#i-user"/></svg></span>
-        <input id="u" type="text" placeholder="ชื่อผู้ใช้ AD" autocomplete="username" /></div>
+        <input id="u" type="text" placeholder="ชื่อผู้ใช้ AD" autocomplete="username" oninput="clearErr('u')" /></div>
       <p class="hint">เช่น <span class="mono">nont.naraphat</span> — รูปแบบ ชื่อเล่น.ชื่อจริง</p>
+      <p class="err-msg"><svg class="icon" style="width:14px;height:14px"><use href="#i-x"/></svg><span class="emt">กรุณากรอกชื่อผู้ใช้</span></p>
     </div>
     <div class="field">
       <label for="p">รหัสผ่าน</label>
       <div class="iw"><span class="pre"><svg class="icon" style="width:18px;height:18px"><use href="#i-lock"/></svg></span>
-        <input id="p" type="password" placeholder="รหัสผ่าน" autocomplete="current-password" />
+        <input id="p" type="password" placeholder="รหัสผ่าน" autocomplete="current-password" oninput="clearErr('p')" />
         <button class="toggle" type="button" onclick="eye(this,'p')" aria-label="แสดงรหัสผ่าน"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+      <p class="err-msg"><svg class="icon" style="width:14px;height:14px"><use href="#i-x"/></svg><span class="emt">กรุณากรอกรหัสผ่าน</span></p>
     </div>
     <button class="btn btn-pri" onclick="signIn()">เข้าสู่ระบบ <svg class="icon" style="width:18px;height:18px"><use href="#i-arrow"/></svg></button>
     <p class="login-meta">โดเมน <span class="mono">bearhouse.sunsu.local</span><br/>ลืมรหัสผ่านหรือบัญชีถูกล็อก? <a href="#" onclick="toast('ติดต่อ IT Helpdesk เบอร์ภายใน 7100');return false">ติดต่อ IT Helpdesk</a></p>
@@ -464,7 +474,7 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
             <div class="card">
               <div class="card-head"><span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-bell"/></svg></span><h3>กำหนดการเตือน</h3></div>
               <div class="card-pad" style="padding-top:14px">
-                <p style="font-size:13px;color:var(--txt-2);margin-bottom:12px">เตือนล่วงหน้าก่อนหมดอายุ</p>
+                <p style="font-size:13px;color:var(--txt-2);margin-bottom:12px">เตือนล่วงหน้าก่อนหมดอายุ (ตั้งค่าโดยผู้ดูแลระบบ)</p>
                 <div class="sched">
                   <span class="cpill ro">14 วัน</span>
                   <span class="cpill ro">7 วัน</span>
@@ -595,18 +605,38 @@ async function checkLark(){
   }catch(e){}
 }
 
+function setErr(id,msg){
+  const inp=document.getElementById(id); if(!inp)return;
+  inp.classList.add('err');
+  const fld=inp.closest('.field'); if(fld){fld.classList.add('has-err'); const t=fld.querySelector('.emt'); if(t&&msg)t.textContent=msg;}
+}
+function clearErr(id){
+  const inp=document.getElementById(id); if(!inp)return;
+  inp.classList.remove('err');
+  const fld=inp.closest('.field'); if(fld)fld.classList.remove('has-err');
+}
 async function signIn(){
   const u=document.getElementById('u').value.trim();
   const p=document.getElementById('p').value;
-  if(!u||!p){toast('กรอกชื่อผู้ใช้และรหัสผ่าน');return;}
+  clearErr('u'); clearErr('p');
+  let bad=false;
+  if(!u){setErr('u','กรุณากรอกชื่อผู้ใช้'); bad=true;}
+  if(!p){setErr('p','กรุณากรอกรหัสผ่าน'); bad=true;}
+  if(bad){return;}
   try{
     const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
     const d=await r.json();
-    if(!r.ok){toast(d.detail||'เข้าสู่ระบบไม่สำเร็จ');return;}
+    if(!r.ok){
+      const msg=d.detail||'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+      setErr('u',' '); setErr('p',msg);
+      toast('❌ '+msg);
+      return;
+    }
+    clearErr('u'); clearErr('p');
     document.getElementById('login').style.display='none';
     document.getElementById('app').classList.add('on');
     applyStatus(d); checkLark();
-  }catch(e){toast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้');}
+  }catch(e){toast('❌ เชื่อมต่อเซิร์ฟเวอร์ไม่ได้');}
 }
 async function savePw(){
   const cur=document.getElementById('cur').value,np=document.getElementById('np').value,cf=document.getElementById('cf').value;
