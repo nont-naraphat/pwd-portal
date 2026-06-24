@@ -686,6 +686,7 @@ function checkPw(){
 
 // Enter to submit on login
 ['u','p'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();signIn();}});});
+['cur','np','cf'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();savePw();}});});
 
 (function init(){
   const d=new Date();
