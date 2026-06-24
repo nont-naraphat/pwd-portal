@@ -62,8 +62,12 @@ def _card(name: str, days: int, expiry_date: str) -> dict:
         },
         "elements": [
             {"tag": "div", "text": {"tag": "lark_md",
-             "content": f"เรียน คุณ{name}\nรหัสผ่านบัญชี AD ของคุณจะหมดอายุใน **{days} วัน** "
-                        f"กรุณาเปลี่ยนก่อนวันหมดอายุเพื่อไม่ให้กระทบการใช้งานและ WiFi"}},
+             "content": f"เรียน คุณ{name}\n\nรหัสผ่านบัญชี Active Directory ของคุณจะหมดอายุใน **{days} วัน**\n\n"
+                        f"รหัสผ่านนี้เป็นชุดเดียวที่ใช้กับทุกระบบ หากปล่อยให้หมดอายุจะกระทบ:\n"
+                        f"💻 **เข้าคอมพิวเตอร์** (Windows login)\n"
+                        f"📶 **WiFi ออฟฟิศ** (802.1X)\n"
+                        f"🔐 **VPN** เข้าระบบบริษัท\n\n"
+                        f"กรุณาเปลี่ยนรหัสผ่านก่อนวันหมดอายุ เพื่อให้ใช้งานได้ต่อเนื่อง"}},
             {"tag": "div", "fields": [
                 {"is_short": True, "text": {"tag": "lark_md", "content": f"**วันหมดอายุ**\n{expiry_date}"}},
                 {"is_short": True, "text": {"tag": "lark_md", "content": f"**เหลือเวลา**\n{days} วัน"}},
