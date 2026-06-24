@@ -24,8 +24,6 @@ services:
       - NOTIFY_DAYS=${NOTIFY_DAYS:-14,7,3,1}
       - NOTIFY_HOUR=${NOTIFY_HOUR:-9}
       - PORTAL_URL=${PORTAL_URL}
-    volumes:
-      - ./certs:/certs:ro
     # ให้คอนเทนเนอร์ resolve ชื่อ DC ไปที่ IP ภายใน (cert ยังตรวจตามชื่อได้)
     extra_hosts:
       - "${AD_HOST}:${AD_IP}"
