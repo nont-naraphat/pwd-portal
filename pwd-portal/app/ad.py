@@ -7,6 +7,9 @@ from ldap3.core.exceptions import LDAPException
 
 from . import config
 
+import logging
+log = logging.getLogger("ad")
+
 EPOCH_AS_FILETIME = 116444736000000000  # 1601->1970 ใน FILETIME (100ns ticks)
 NEVER = (0, 9223372036854775807)
 
