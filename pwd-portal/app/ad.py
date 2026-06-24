@@ -46,14 +46,20 @@ def verify_password(username: str, password: str) -> bool:
     """ลอง bind ด้วยรหัสของผู้ใช้เอง"""
     if not password:
         return False
-    upn = f"{username}@{config.AD_UPN_SUFFIX}"
+    if "@" in username or "\\" in username:
+        upn = username
+    else:
+        upn = f"{username}@{config.AD_UPN_SUFFIX}"
     try:
         conn = Connection(_server(), user=upn, password=password)
         ok = conn.bind()
-        if ok:
+        if not ok:
+            log.warning("bind ล้มเหลว user=%s result=%s", upn, conn.result)
+        else:
             conn.unbind()
         return bool(ok)
-    except LDAPException:
+    except LDAPException as e:
+        log.error("bind error user=%s: %s", upn, e)
         return False
 
 
