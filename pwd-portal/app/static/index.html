@@ -670,6 +670,10 @@ window.signIn = async function(){
     applyStatus(d);
   }catch(e){ toast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'); }
 };
+['u','p'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(el) el.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); window.signIn(); }});
+});
 window.savePw = async function(){
   var cur=document.getElementById('cur').value, np=document.getElementById('np').value, cf=document.getElementById('cf').value;
   if(!cur||!np){ toast('กรอกข้อมูลให้ครบ'); return; }
