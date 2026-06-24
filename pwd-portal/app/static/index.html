@@ -526,7 +526,7 @@ window.CURRENT_USER = null;
 function eye(btn,id){const i=document.getElementById(id);const on=i.type==='password';i.type=on?'text':'password';btn.querySelector('use').setAttribute('href',on?'#i-eyeoff':'#i-eye');}
 let tt;
 function toast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600);}
-function signOut(){document.getElementById('app').classList.remove('on');document.getElementById('login').style.display='grid';window.CURRENT_USER=null;go('dashboard');}
+function signOut(){fetch('/api/logout',{method:'POST'}).catch(()=>{});document.getElementById('app').classList.remove('on');document.getElementById('login').style.display='grid';window.CURRENT_USER=null;go('dashboard');}
 
 const titles={dashboard:'ภาพรวม',change:'เปลี่ยนรหัสผ่าน',notify:'การแจ้งเตือน',activity:'ประวัติการใช้งาน'};
 function go(v){
@@ -582,9 +582,7 @@ function applyStatus(d){
   document.getElementById('tb-name').textContent=d.display_name||d.username;
 }
 function refreshStatus(){
-  if(!window.CURRENT_USER)return;
-  fetch('/api/status?username='+encodeURIComponent(window.CURRENT_USER))
-    .then(r=>r.json()).then(d=>{if(d&&d.username)applyStatus(d);}).catch(()=>{});
+  fetch('/api/status').then(r=>r.ok?r.json():Promise.reject()).then(d=>{if(d&&d.username)applyStatus(d);}).catch(()=>{});
 }
 async function checkLark(){
   try{const r=await fetch('/api/health');const d=await r.json();const c=document.getElementById('lark-chip');
@@ -611,7 +609,7 @@ async function savePw(){
   if(!cur||!np){toast('กรอกข้อมูลให้ครบ');return;}
   if(np!==cf){toast('รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน');return;}
   try{
-    const r=await fetch('/api/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:window.CURRENT_USER,current:cur,new_password:np})});
+    const r=await fetch('/api/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current:cur,new_password:np})});
     const d=await r.json();
     if(!r.ok){toast(d.detail||'เปลี่ยนรหัสไม่สำเร็จ');return;}
     toast('เปลี่ยนรหัสผ่านสำเร็จ · sync กับ AD แล้ว');
@@ -637,6 +635,11 @@ function checkPw(){
   const d=new Date();
   const m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
   document.getElementById('today').textContent=d.getDate()+' '+m[d.getMonth()]+' '+(d.getFullYear()+543);
+  fetch('/api/me').then(function(r){return r.ok?r.json():Promise.reject();}).then(function(s){
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').classList.add('on');
+    applyStatus(s); checkLark();
+  }).catch(function(){});
 })();
 </script>
 </body>
