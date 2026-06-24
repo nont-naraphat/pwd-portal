@@ -428,18 +428,21 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
           <div class="card card-pad">
             <div class="field"><label for="cur">รหัสผ่านปัจจุบัน</label>
               <div class="iw"><span class="pre"><svg class="icon" style="width:18px;height:18px"><use href="#i-lock"/></svg></span>
-                <input id="cur" type="password" placeholder="รหัสผ่านเดิม" />
-                <button class="toggle" type="button" onclick="eye(this,'cur')" aria-label="แสดง"><svg class="icon"><use href="#i-eye"/></svg></button></div></div>
+                <input id="cur" type="password" placeholder="รหัสผ่านเดิม" oninput="clearErr('cur')" />
+                <button class="toggle" type="button" onclick="eye(this,'cur')" aria-label="แสดง"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+              <p class="err-msg"><svg class="icon" style="width:14px;height:14px"><use href="#i-x"/></svg><span class="emt">รหัสผ่านปัจจุบันไม่ถูกต้อง</span></p></div>
             <div class="field"><label for="np">รหัสผ่านใหม่</label>
               <div class="iw"><span class="pre"><svg class="icon" style="width:18px;height:18px"><use href="#i-key"/></svg></span>
-                <input id="np" type="password" placeholder="ตั้งรหัสผ่านใหม่" oninput="checkPw()" />
-                <button class="toggle" type="button" onclick="eye(this,'np')" aria-label="แสดง"><svg class="icon"><use href="#i-eye"/></svg></button></div></div>
+                <input id="np" type="password" placeholder="ตั้งรหัสผ่านใหม่" oninput="checkPw();clearErr('np')" />
+                <button class="toggle" type="button" onclick="eye(this,'np')" aria-label="แสดง"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+              <p class="err-msg"><svg class="icon" style="width:14px;height:14px"><use href="#i-x"/></svg><span class="emt">รหัสผ่านใหม่ไม่ผ่านเงื่อนไข</span></p></div>
             <div class="meter"><span id="meter"></span></div>
             <div class="meter-lbl" id="meter-lbl" style="margin-bottom:14px">ความแข็งแรง: —</div>
             <div class="field mb0"><label for="cf">ยืนยันรหัสผ่านใหม่</label>
               <div class="iw"><span class="pre"><svg class="icon" style="width:18px;height:18px"><use href="#i-key"/></svg></span>
-                <input id="cf" type="password" placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง" oninput="checkPw()" />
-                <button class="toggle" type="button" onclick="eye(this,'cf')" aria-label="แสดง"><svg class="icon"><use href="#i-eye"/></svg></button></div></div>
+                <input id="cf" type="password" placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง" oninput="checkPw();clearErr('cf')" />
+                <button class="toggle" type="button" onclick="eye(this,'cf')" aria-label="แสดง"><svg class="icon"><use href="#i-eye"/></svg></button></div>
+              <p class="err-msg"><svg class="icon" style="width:14px;height:14px"><use href="#i-x"/></svg><span class="emt">รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน</span></p></div>
             <div style="display:flex;gap:10px;margin-top:20px">
               <button class="btn btn-pri" style="width:auto" id="save-pw" onclick="savePw()">บันทึกรหัสผ่านใหม่</button>
               <button class="btn btn-ghost" style="width:auto" onclick="go('dashboard')">ยกเลิก</button>
@@ -640,15 +643,25 @@ async function signIn(){
 }
 async function savePw(){
   const cur=document.getElementById('cur').value,np=document.getElementById('np').value,cf=document.getElementById('cf').value;
-  if(!cur||!np){toast('กรอกข้อมูลให้ครบ');return;}
-  if(np!==cf){toast('รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน');return;}
+  clearErr('cur'); clearErr('np'); clearErr('cf');
+  let bad=false;
+  if(!cur){setErr('cur','กรุณากรอกรหัสผ่านปัจจุบัน'); bad=true;}
+  if(!np){setErr('np','กรุณาตั้งรหัสผ่านใหม่'); bad=true;}
+  if(bad){return;}
+  if(np!==cf){setErr('cf','รหัสผ่านใหม่ทั้งสองช่องไม่ตรงกัน'); return;}
   try{
     const r=await fetch('/api/change-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({current:cur,new_password:np})});
     const d=await r.json();
-    if(!r.ok){toast(d.detail||'เปลี่ยนรหัสไม่สำเร็จ');return;}
-    toast('เปลี่ยนรหัสผ่านสำเร็จ · sync กับ AD แล้ว');
-    setTimeout(()=>{document.getElementById('cur').value='';document.getElementById('np').value='';document.getElementById('cf').value='';checkPw();go('dashboard');refreshStatus();},700);
-  }catch(e){toast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้');}
+    if(!r.ok){
+      const msg=d.detail||'เปลี่ยนรหัสไม่สำเร็จ';
+      if(/ปัจจุบัน|current|เดิม|ไม่ถูกต้อง|incorrect|invalid cred/i.test(msg)){ setErr('cur',msg); }
+      else { setErr('np',msg); }
+      toast('❌ '+msg);
+      return;
+    }
+    toast('✅ เปลี่ยนรหัสผ่านสำเร็จ · sync กับ AD แล้ว');
+    setTimeout(()=>{document.getElementById('cur').value='';document.getElementById('np').value='';document.getElementById('cf').value='';clearErr('cur');clearErr('np');clearErr('cf');checkPw();go('dashboard');refreshStatus();},700);
+  }catch(e){toast('❌ เชื่อมต่อเซิร์ฟเวอร์ไม่ได้');}
 }
 async function testLark(){
   toast('กำลังส่งทดสอบเข้า Lark…');
