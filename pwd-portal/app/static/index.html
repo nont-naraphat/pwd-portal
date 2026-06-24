@@ -381,7 +381,7 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
 
         <div class="grid tiles section-gap">
           <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-cal"/></svg> อายุรหัสปัจจุบัน</div><div class="val" id="t-age">–</div><div class="meta" id="t-age-meta">–</div></div>
-          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-bell"/></svg> เตือนถัดไป</div><div class="val">ทุกวัน 09:00</div><div class="meta">สแกนอัตโนมัติ</div></div>
+          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-bell"/></svg> เตือนถัดไป</div><div class="val">ทุกวัน 14:00</div><div class="meta">สแกนอัตโนมัติ</div></div>
           <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-key"/></svg> เปลี่ยนล่าสุด</div><div class="val" id="t-changed" style="font-size:16px">–</div><div class="meta">วันที่เปลี่ยนรหัส</div></div>
           <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-clock"/></svg> เข้าระบบล่าสุด</div><div class="val" id="t-logon" style="font-size:15px">–</div><div class="meta">จาก AD</div></div>
         </div>
@@ -451,15 +451,13 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
       <!-- NOTIFICATIONS -->
       <section class="view" data-view="notify">
         <div class="page-head"><h2>การแจ้งเตือน</h2><p>เลือกช่องทางและกำหนดเวลาเตือนก่อนรหัสผ่านหมดอายุ</p></div>
-        <div class="banner"><svg class="icon"><use href="#i-info"/></svg> ส่วนนี้เป็นตัวอย่างหน้าตั้งค่า ยังไม่บันทึกค่า (รอเชื่อมฐานข้อมูล) — การแจ้งเตือนจริงทำงานผ่านตัวสแกนรายวันเมื่อใส่ค่า Lark App จริงแล้ว</div>
+        <div class="banner" style="background:#ecfdf5;border-color:#a7f3d0;color:#065f46"><svg class="icon"><use href="#i-check"/></svg> ระบบแจ้งเตือน Lark ทำงานแล้ว — สแกนบัญชีอัตโนมัติทุกวันเวลา 14:00 น. และส่งการ์ดเตือนเข้า Lark ให้พนักงานที่รหัสใกล้หมดอายุ</div>
         <div class="pw-grid">
           <div>
             <div class="card section-gap">
               <div class="card-head"><span class="ic"><svg class="icon" style="width:18px;height:18px"><use href="#i-msg"/></svg></span><h3>ช่องทางแจ้งเตือน</h3></div>
               <div class="card-pad" style="padding-top:4px">
-                <div class="toggle-row"><div class="info"><div class="t"><span class="lk" style="width:18px;height:18px"></span> Lark</div><div class="s">ส่งการ์ดเข้าแชทส่วนตัวผ่าน IT Password Bot</div></div><button class="sw on" onclick="this.classList.toggle('on')"></button></div>
-                <div class="toggle-row"><div class="info"><div class="t"><svg class="icon"><use href="#i-mail"/></svg> อีเมล</div><div class="s">ส่งเข้าอีเมลองค์กร</div></div><button class="sw on" onclick="this.classList.toggle('on')"></button></div>
-                <div class="toggle-row"><div class="info"><div class="t"><svg class="icon"><use href="#i-grid"/></svg> แจ้งเตือนตอนเข้าระบบ</div><div class="s">แสดงข้อความบนหน้าจอ login ของ Windows</div></div><button class="sw" onclick="this.classList.toggle('on')"></button></div>
+                <div class="toggle-row"><div class="info"><div class="t"><span class="lk" style="width:18px;height:18px"></span> Lark</div><div class="s">ส่งการ์ดแจ้งเตือนเข้าแชทส่วนตัวผ่าน IT Password Bot</div></div><button class="sw on" style="opacity:.6;cursor:default" onclick="return false"></button></div>
               </div>
             </div>
             <div class="card">
@@ -479,14 +477,18 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
           <div class="card card-pad">
             <h3 style="font-size:14px;font-weight:600;margin-bottom:14px;color:var(--txt-2)">ตัวอย่างข้อความใน Lark</h3>
             <div class="lark-msg">
-              <div class="lark-from"><span class="bot" style="background:#fff;border:1px solid var(--line)"><span class="lk" style="width:22px;height:22px"></span></span><span><div class="nm">IT Password Bot</div><div class="tm">ทุกวัน 09:00</div></span></div>
+              <div class="lark-from"><span class="bot" style="background:#fff;border:1px solid var(--line)"><span class="lk" style="width:22px;height:22px"></span></span><span><div class="nm">IT Password Bot</div><div class="tm">ทุกวัน 14:00</div></span></div>
               <div class="lark-card">
                 <div class="hd"><svg class="icon" style="width:18px;height:18px"><use href="#i-alert"/></svg> รหัสผ่านใกล้หมดอายุ</div>
                 <div class="bd">
-                  <p>เรียน คุณ… รหัสผ่านบัญชี AD ของคุณจะหมดอายุใน <b>7 วัน</b> กรุณาเปลี่ยนก่อนวันหมดอายุ</p>
-                  <div class="fl"><span class="k">วันหมดอายุ</span><span>22/7/2026</span></div>
+                  <p>เรียน คุณNaraphat Tansopon</p>
+                  <p style="margin-top:8px">รหัสผ่านบัญชี Active Directory ของคุณจะหมดอายุใน <b>7 วัน</b></p>
+                  <p style="margin-top:8px">รหัสผ่านนี้เป็นชุดเดียวที่ใช้กับทุกระบบ หากปล่อยให้หมดอายุจะกระทบ:</p>
+                  <p style="margin-top:6px;line-height:1.9">💻 <b>เข้าคอมพิวเตอร์</b> (Windows login)<br>📶 <b>WiFi ออฟฟิศ</b> (802.1X)<br>🔐 <b>VPN</b> เข้าระบบบริษัท</p>
+                  <p style="margin-top:8px">กรุณาเปลี่ยนรหัสผ่านก่อนวันหมดอายุ เพื่อให้ใช้งานได้ต่อเนื่อง</p>
+                  <div class="fl" style="margin-top:10px"><span class="k">วันหมดอายุ</span><span>22/7/2026</span></div>
                   <div class="fl"><span class="k">เหลือเวลา</span><span style="color:var(--warn);font-weight:600">7 วัน</span></div>
-                  <div class="acts"><button class="b1">เปลี่ยนรหัสผ่าน</button><button class="b2">ดูสถานะ</button></div>
+                  <div class="acts"><button class="b1">เปลี่ยนรหัสผ่าน</button></div>
                 </div>
               </div>
             </div>
