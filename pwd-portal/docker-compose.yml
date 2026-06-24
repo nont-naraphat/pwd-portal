@@ -1,0 +1,47 @@
+services:
+  app:
+    build: .
+    image: pwd-portal:latest
+    container_name: pwd-portal
+    restart: unless-stopped
+    environment:
+      # --- Active Directory ---
+      - AD_HOST=${AD_HOST}
+      - AD_PORT=636
+      - AD_USE_SSL=true
+      - AD_BASE_DN=${AD_BASE_DN}
+      - AD_USER_OU=${AD_USER_OU}
+      - AD_UPN_SUFFIX=${AD_UPN_SUFFIX}
+      - AD_BIND_USER=${AD_BIND_USER}
+      - AD_BIND_PASSWORD=${AD_BIND_PASSWORD}
+      - AD_CA_CERT=/certs/bearhouse-ca.crt
+      - AD_TLS_VALIDATE=${AD_TLS_VALIDATE:-required}
+      # --- Lark ---
+      - LARK_DOMAIN=${LARK_DOMAIN:-https://open.larksuite.com}
+      - LARK_APP_ID=${LARK_APP_ID}
+      - LARK_APP_SECRET=${LARK_APP_SECRET}
+      # --- การแจ้งเตือน ---
+      - NOTIFY_DAYS=${NOTIFY_DAYS:-14,7,3,1}
+      - NOTIFY_HOUR=${NOTIFY_HOUR:-9}
+      - PORTAL_URL=${PORTAL_URL}
+    volumes:
+      - ./certs:/certs:ro
+    # ให้คอนเทนเนอร์ resolve ชื่อ DC ไปที่ IP ภายใน (cert ยังตรวจตามชื่อได้)
+    extra_hosts:
+      - "${AD_HOST}:${AD_IP}"
+    ports:
+      - "8080:8080"
+
+  # เปิดใช้ proxy นี้เมื่อต้องการ HTTPS หน้าเว็บ (ดู Caddyfile)
+  # proxy:
+  #   image: caddy:2
+  #   container_name: pwd-proxy
+  #   restart: unless-stopped
+  #   depends_on: [app]
+  #   ports:
+  #     - "443:443"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile:ro
+  #     - caddy_data:/data
+# volumes:
+#   caddy_data:

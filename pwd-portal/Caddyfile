@@ -1,0 +1,4 @@
+pwd.bearhouse.sunsu.local {
+    tls internal
+    reverse_proxy app:8080
+}
