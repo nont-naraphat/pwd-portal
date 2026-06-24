@@ -618,10 +618,9 @@ async function savePw(){
   }catch(e){toast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้');}
 }
 async function testLark(){
-  if(!window.CURRENT_EMAIL){toast('ไม่พบอีเมลของบัญชีคุณใน AD');return;}
   toast('กำลังส่งทดสอบ…');
   try{
-    const r=await fetch('/api/notify/test',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:window.CURRENT_EMAIL})});
+    const r=await fetch('/api/notify/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
     const d=await r.json();
     if(!r.ok){toast(d.detail||'ส่งทดสอบไม่สำเร็จ');return;}
     toast('ส่งการ์ดทดสอบเข้า Lark แล้ว ✓ เช็กที่แอป Lark');
