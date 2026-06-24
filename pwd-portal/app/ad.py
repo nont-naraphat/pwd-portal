@@ -1,6 +1,6 @@
 """เชื่อม Active Directory ผ่าน LDAPS: ตรวจรหัส / อ่านวันหมดอายุ / เปลี่ยนรหัส"""
 import ssl
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from ldap3 import Server, Connection, Tls, ALL, SUBTREE
 from ldap3.core.exceptions import LDAPException
@@ -12,6 +12,7 @@ log = logging.getLogger("ad")
 
 EPOCH_AS_FILETIME = 116444736000000000  # 1601->1970 ใน FILETIME (100ns ticks)
 NEVER = (0, 9223372036854775807)
+BKK = timezone(timedelta(hours=7))  # เวลาไทย
 
 
 def _tls():
@@ -69,7 +70,9 @@ def verify_password(username: str, password: str) -> bool:
 def _find_user(conn, username: str):
     conn.search(config.AD_BASE_DN, f"(sAMAccountName={username})", SUBTREE,
                 attributes=["distinguishedName", "displayName", "mail",
-                            "msDS-UserPasswordExpiryTimeComputed"])
+                            "msDS-UserPasswordExpiryTimeComputed",
+                            "pwdLastSet", "lastLogonTimestamp",
+                            "userAccountControl"])
     return conn.entries[0] if conn.entries else None
 
 
@@ -80,10 +83,17 @@ def get_status(username: str) -> dict:
     conn.unbind()
     if e is None:
         raise LookupError("user not found")
+    now = datetime.now(timezone.utc)
     exp = _filetime_to_dt(e["msDS-UserPasswordExpiryTimeComputed"].value)
-    days = None
-    if exp is not None:
-        days = (exp - datetime.now(timezone.utc)).days
+    changed = _filetime_to_dt(e["pwdLastSet"].value)
+    logon = _filetime_to_dt(e["lastLogonTimestamp"].value)
+    days = (exp - now).days if exp else None
+    age = (now - changed).days if changed else None
+    cycle = (exp - changed).days if (exp and changed) else None
+    try:
+        enabled = not (int(e["userAccountControl"].value) & 0x2)
+    except Exception:
+        enabled = True
     return {
         "username": username,
         "display_name": str(e["displayName"].value or username),
@@ -91,6 +101,11 @@ def get_status(username: str) -> dict:
         "expiry": exp.isoformat() if exp else None,
         "expiry_date": exp.strftime("%-d/%-m/%Y") if exp else "ไม่หมดอายุ",
         "days_left": days if days is not None else 9999,
+        "changed_date": changed.astimezone(BKK).strftime("%-d/%-m/%Y") if changed else "-",
+        "password_age_days": age,
+        "cycle_days": cycle,
+        "last_logon": logon.astimezone(BKK).strftime("%-d/%-m/%Y %H:%M") if logon else "-",
+        "account_enabled": enabled,
     }
 
 
