@@ -362,8 +362,8 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
                 <p class="txt" id="state-text">เปลี่ยนรหัสผ่านก่อนวันที่ 1 ก.ค. 2026 เพื่อให้เข้าใช้งานคอมพิวเตอร์และ WiFi ได้ต่อเนื่อง</p>
                 <div class="hero-facts">
                   <div class="f"><div class="k">วันหมดอายุ</div><div class="v" id="f-exp">1 ก.ค. 2026</div></div>
-                  <div class="f"><div class="k">เปลี่ยนล่าสุด</div><div class="v">3 เม.ย. 2026</div></div>
-                  <div class="f"><div class="k">รอบเปลี่ยน</div><div class="v">ทุก 90 วัน</div></div>
+                  <div class="f"><div class="k">เปลี่ยนล่าสุด</div><div class="v" id="f-changed">-</div></div>
+                  <div class="f"><div class="k">รอบเปลี่ยน</div><div class="v" id="f-cycle">-</div></div>
                 </div>
                 <div class="hero-actions">
                   <button class="btn btn-pri" style="width:auto" onclick="go('change')"><svg class="icon" style="width:18px;height:18px"><use href="#i-key"/></svg> เปลี่ยนรหัสผ่าน</button>
@@ -378,18 +378,17 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
             <div class="card-pad acct" style="padding-top:6px">
               <div class="row"><span class="k"><svg class="icon"><use href="#i-user"/></svg> ชื่อผู้ใช้</span><span class="v mono" id="acct-user">-</span></div>
               <div class="row"><span class="k"><svg class="icon"><use href="#i-mail"/></svg> อีเมล</span><span class="v" id="acct-mail">-</span></div>
-              <div class="row"><span class="k"><svg class="icon"><use href="#i-shield"/></svg> สถานะบัญชี</span><span class="tag ok"><svg class="icon" style="width:13px;height:13px"><use href="#i-check"/></svg> ใช้งานปกติ</span></div>
-              <div class="row"><span class="k"><svg class="icon"><use href="#i-lock"/></svg> MFA</span><span class="v">เปิดใช้งาน</span></div>
-              <div class="row"><span class="k"><svg class="icon"><use href="#i-clock"/></svg> เข้าระบบล่าสุด</span><span class="v">วันนี้ 08:42</span></div>
+              <div class="row"><span class="k"><svg class="icon"><use href="#i-shield"/></svg> สถานะบัญชี</span><span class="tag ok" id="acct-status"><svg class="icon" style="width:13px;height:13px"><use href="#i-check"/></svg> <span id="acct-status-txt">-</span></span></div>
+              <div class="row"><span class="k"><svg class="icon"><use href="#i-clock"/></svg> เข้าระบบล่าสุด</span><span class="v" id="acct-logon">-</span></div>
             </div>
           </div>
         </div>
 
         <div class="grid tiles section-gap">
-          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-cal"/></svg> อายุรหัสปัจจุบัน</div><div class="val">82 วัน</div><div class="meta">จากรอบ 90 วัน</div></div>
-          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-bell"/></svg> เตือนถัดไป</div><div class="val">พรุ่งนี้ 09:00</div><div class="meta">ผ่าน Lark</div></div>
-          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-wifi"/></svg> WiFi 802.1X</div><div class="val">เชื่อมต่อ</div><div class="meta">authenticate ด้วยเครื่อง</div></div>
-          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-cycle"/></svg> เปลี่ยนแล้ว</div><div class="val">3 ครั้ง</div><div class="meta">ใน 12 เดือน</div></div>
+          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-cal"/></svg> อายุรหัสปัจจุบัน</div><div class="val" id="t-age">-</div><div class="meta" id="t-age-meta">-</div></div>
+          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-bell"/></svg> เตือนถัดไป</div><div class="val">ทุกวัน 09:00</div><div class="meta">สแกนอัตโนมัติ</div></div>
+          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-key"/></svg> เปลี่ยนล่าสุด</div><div class="val" id="t-changed" style="font-size:16px">-</div><div class="meta">วันที่เปลี่ยนรหัส</div></div>
+          <div class="tile"><div class="lbl"><svg class="icon"><use href="#i-clock"/></svg> เข้าระบบล่าสุด</div><div class="val" id="t-logon" style="font-size:15px">-</div><div class="meta">จาก AD</div></div>
         </div>
 
         <div class="card">
@@ -639,6 +638,16 @@ function applyStatus(d){
   document.getElementById('greet').textContent='สวัสดี '+_firstName(d.display_name);
   document.getElementById('acct-user').textContent=d.username;
   document.getElementById('acct-mail').textContent=d.mail||'-';
+  document.getElementById('f-changed').textContent=d.changed_date||'-';
+  document.getElementById('f-cycle').textContent=(d.cycle_days?('ทุก '+d.cycle_days+' วัน'):'-');
+  var stx=document.getElementById('acct-status-txt'), st=document.getElementById('acct-status');
+  if(d.account_enabled===false){ stx.textContent='ปิดใช้งาน'; st.style.background='var(--crit-bg)'; st.style.color='var(--crit)'; st.style.border='1px solid var(--crit-line)'; }
+  else { stx.textContent='ใช้งานปกติ'; }
+  document.getElementById('acct-logon').textContent=d.last_logon||'-';
+  document.getElementById('t-age').textContent=(d.password_age_days!=null?(d.password_age_days+' วัน'):'-');
+  document.getElementById('t-age-meta').textContent=(d.cycle_days?('จากรอบ '+d.cycle_days+' วัน'):'-');
+  document.getElementById('t-changed').textContent=d.changed_date||'-';
+  document.getElementById('t-logon').textContent=d.last_logon||'-';
   document.querySelector('.avatar').textContent=_initials(d.display_name)||'?';
   document.querySelector('.user-chip .nm').textContent=d.display_name||d.username;
 }
@@ -661,10 +670,6 @@ window.signIn = async function(){
     applyStatus(d);
   }catch(e){ toast('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'); }
 };
-['u','p'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(el) el.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); window.signIn(); }});
-});
 window.savePw = async function(){
   var cur=document.getElementById('cur').value, np=document.getElementById('np').value, cf=document.getElementById('cf').value;
   if(!cur||!np){ toast('กรอกข้อมูลให้ครบ'); return; }
