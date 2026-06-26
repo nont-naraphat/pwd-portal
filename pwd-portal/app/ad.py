@@ -70,6 +70,7 @@ def verify_password(username: str, password: str) -> bool:
 def _find_user(conn, username: str):
     conn.search(config.AD_BASE_DN, f"(sAMAccountName={username})", SUBTREE,
                 attributes=["distinguishedName", "displayName", "mail",
+                            "department", "title",
                             "msDS-UserPasswordExpiryTimeComputed",
                             "pwdLastSet", "lastLogonTimestamp",
                             "userAccountControl"])
@@ -98,6 +99,8 @@ def get_status(username: str) -> dict:
         "username": username,
         "display_name": str(e["displayName"].value or username),
         "mail": str(e["mail"].value or ""),
+        "department": str(e["department"].value or ""),
+        "title": str(e["title"].value or ""),
         "expiry": exp.isoformat() if exp else None,
         "expiry_date": exp.strftime("%-d/%-m/%Y") if exp else "ไม่หมดอายุ",
         "days_left": days if days is not None else 9999,
