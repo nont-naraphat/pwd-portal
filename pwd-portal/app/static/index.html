@@ -342,7 +342,7 @@ input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(9
       <span class="sp"></span>
       <span class="chip" id="lark-chip"><span class="lk"></span> Lark</span>
       <button class="user-chip"><span class="avatar" id="tb-av">–</span>
-        <span><span class="nm" id="tb-name">–</span><br/><span class="rl">แผนก IT</span></span></button>
+        <span><span class="nm" id="tb-name">–</span><br/><span class="rl" id="tb-dept">แผนก IT</span></span></button>
       <button class="icon-btn" onclick="signOut()" aria-label="ออกจากระบบ"><svg class="icon" style="width:19px;height:19px"><use href="#i-logout"/></svg></button>
     </header>
 
@@ -596,7 +596,7 @@ function applyStatus(d){
   document.getElementById('t-changed').textContent=d.changed_date||'-';
   document.getElementById('t-logon').textContent=d.last_logon||'-';
   document.getElementById('tb-av').textContent=_ini(d.display_name)||'?';
-  document.getElementById('tb-name').textContent=d.display_name||d.username;
+  document.getElementById('tb-dept').textContent=d.department?('แผนก '+d.department):'แผนก IT';
 }
 function refreshStatus(){
   fetch('/api/status').then(r=>r.ok?r.json():Promise.reject()).then(d=>{if(d&&d.username)applyStatus(d);}).catch(()=>{});
