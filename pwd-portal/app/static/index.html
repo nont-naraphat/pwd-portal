@@ -596,6 +596,7 @@ function applyStatus(d){
   document.getElementById('t-changed').textContent=d.changed_date||'-';
   document.getElementById('t-logon').textContent=d.last_logon||'-';
   document.getElementById('tb-av').textContent=_ini(d.display_name)||'?';
+  document.getElementById('tb-name').textContent=d.display_name||d.username;
   document.getElementById('tb-dept').textContent=d.department?('แผนก '+d.department):'แผนก IT';
 }
 function refreshStatus(){
