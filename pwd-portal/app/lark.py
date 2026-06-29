@@ -54,6 +54,8 @@ def open_id_by_email(email: str):
 
 
 def _card(name: str, days: int, expiry_date: str) -> dict:
+    portal = config.PORTAL_URL
+    guide = config.PORTAL_URL.rstrip("/") + "/#change-win"
     return {
         "config": {"wide_screen_mode": True},
         "header": {
@@ -61,21 +63,37 @@ def _card(name: str, days: int, expiry_date: str) -> dict:
             "title": {"tag": "plain_text", "content": "รหัสผ่านใกล้หมดอายุ"},
         },
         "elements": [
+            # หัวข้อ + สรุปวันหมดอายุ
             {"tag": "div", "text": {"tag": "lark_md",
-             "content": f"เรียน คุณ{name}\n\nรหัสผ่านบัญชี Active Directory ของคุณจะหมดอายุใน **{days} วัน**\n\n"
-                        f"รหัสผ่านนี้เป็นชุดเดียวที่ใช้กับทุกระบบ หากปล่อยให้หมดอายุจะกระทบ:\n"
-                        f"💻 **เข้าคอมพิวเตอร์** (Windows login)\n"
-                        f"📶 **WiFi ออฟฟิศ** (802.1X)\n"
-                        f"🔐 **VPN** เข้าระบบบริษัท\n\n"
-                        f"กรุณาเปลี่ยนรหัสผ่านก่อนวันหมดอายุ เพื่อให้ใช้งานได้ต่อเนื่อง"}},
-            {"tag": "div", "fields": [
-                {"is_short": True, "text": {"tag": "lark_md", "content": f"**วันหมดอายุ**\n{expiry_date}"}},
-                {"is_short": True, "text": {"tag": "lark_md", "content": f"**เหลือเวลา**\n{days} วัน"}},
-            ]},
+             "content": f"เรียน คุณ{name}\n\n"
+                        f"รหัสผ่าน **Active Directory** จะหมดอายุใน **{days} วัน** (วันที่ {expiry_date})\n"
+                        f"รหัสนี้ใช้เข้า 💻 คอมพิวเตอร์ · 📶 WiFi ออฟฟิศ · 🔐 VPN — กรุณาเปลี่ยนก่อนหมดอายุ\n\n"
+                        f"**เปลี่ยนได้ 2 วิธี เลือกอันที่สะดวก** 👇"}},
+            {"tag": "hr"},
+            # วิธีที่ 1 — กดลิงก์เปลี่ยนเลย
+            {"tag": "div", "text": {"tag": "lark_md",
+             "content": "**1️⃣  กดลิงก์ เปลี่ยนได้เลย**  ⭐ ง่ายสุด\n"
+                        "กดปุ่มข้างล่าง เปิดหน้าเว็บแล้วตั้งรหัสใหม่ในนั้น — "
+                        "ใช้ได้ทุกที่ ทุกเครื่อง แม้อยู่นอกออฟฟิศ"}},
             {"tag": "action", "actions": [
                 {"tag": "button", "type": "primary",
                  "text": {"tag": "plain_text", "content": "เปลี่ยนรหัสผ่าน"},
-                 "url": config.PORTAL_URL},
+                 "url": portal},
+            ]},
+            {"tag": "hr"},
+            # วิธีที่ 2 — Ctrl+Alt+Delete ที่เครื่อง
+            {"tag": "div", "text": {"tag": "lark_md",
+             "content": "**2️⃣  กด Ctrl + Alt + Delete ที่เครื่อง**\n"
+                        "📍 ใช้ได้เฉพาะตอนนั่งหน้าคอมที่อยู่ใน **เครือข่ายออฟฟิศ** "
+                        "(LAN, WiFi บริษัท หรือเปิด VPN)\n\n"
+                        "`[ Ctrl ]` + `[ Alt ]` + `[ Delete ]`\n\n"
+                        "1. กดสามปุ่มพร้อมกัน แล้วเลือก **Change a password**\n"
+                        "2. ใส่รหัสเดิม → รหัสใหม่ → ยืนยันรหัสใหม่\n"
+                        "3. กด Enter เสร็จเลย ใช้รหัสใหม่กับทุกระบบได้ทันที"}},
+            {"tag": "action", "actions": [
+                {"tag": "button", "type": "default",
+                 "text": {"tag": "plain_text", "content": "ดูวิธีแบบมีรูป"},
+                 "url": guide},
             ]},
         ],
     }
