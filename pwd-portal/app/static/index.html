@@ -587,9 +587,10 @@ function applyStatus(d){
   document.getElementById('greet').textContent='สวัสดี '+_first(d.display_name);
   document.getElementById('acct-user').textContent=d.username;
   document.getElementById('acct-mail').textContent=d.mail||'-';
-  const stx=document.getElementById('acct-status-txt'),st=document.getElementById('acct-status');
-  if(d.account_enabled===false){stx.textContent='ปิดใช้งาน';st.classList.remove('ok');st.style.background='var(--crit-bg)';st.style.color='var(--crit)';st.style.border='1px solid var(--crit-line)';}
-  else{stx.textContent='ใช้งานปกติ';}
+  const stx=document.getElementById('acct-status-txt'),st=document.getElementById('acct-status'),sti=st.querySelector('use');
+  if(d.locked){stx.textContent='ถูกล็อกอยู่'+(d.lockout_time?(' · '+d.lockout_time):'');st.classList.remove('ok');st.style.background='var(--crit-bg)';st.style.color='var(--crit)';st.style.border='1px solid var(--crit-line)';sti.setAttribute('href','#i-lock');}
+  else if(d.account_enabled===false){stx.textContent='ปิดใช้งาน';st.classList.remove('ok');st.style.background='var(--crit-bg)';st.style.color='var(--crit)';st.style.border='1px solid var(--crit-line)';sti.setAttribute('href','#i-alert');}
+  else{stx.textContent='ใช้งานปกติ';st.classList.add('ok');st.style.background='';st.style.color='';st.style.border='';sti.setAttribute('href','#i-check');}
   document.getElementById('acct-logon').textContent=d.last_logon||'-';
   document.getElementById('t-age').textContent=(d.password_age_days!=null?(d.password_age_days+' วัน'):'-');
   document.getElementById('t-age-meta').textContent=(d.cycle_days?('จากรอบ '+d.cycle_days+' วัน'):'-');
