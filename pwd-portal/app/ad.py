@@ -73,9 +73,7 @@ def _find_user(conn, username: str):
                             "department", "title",
                             "msDS-UserPasswordExpiryTimeComputed",
                             "pwdLastSet", "lastLogonTimestamp",
-                            "userAccountControl",
-                            "lockoutTime",
-                            "msDS-User-Account-Control-Computed"])
+                            "userAccountControl"])
     return conn.entries[0] if conn.entries else None
 
 
@@ -97,13 +95,6 @@ def get_status(username: str) -> dict:
         enabled = not (int(e["userAccountControl"].value) & 0x2)
     except Exception:
         enabled = True
-    # สถานะล็อก: ใช้ค่า computed ของ AD ที่คิดเรื่องปลดล็อกอัตโนมัติ (auto-unlock) ให้แล้ว
-    try:
-        uac_computed = int(e["msDS-User-Account-Control-Computed"].value or 0)
-        locked = bool(uac_computed & 0x10)   # UF_LOCKOUT
-    except Exception:
-        locked = False
-    lockout_dt = _filetime_to_dt(e["lockoutTime"].value)
     return {
         "username": username,
         "display_name": str(e["displayName"].value or username),
@@ -118,8 +109,6 @@ def get_status(username: str) -> dict:
         "cycle_days": cycle,
         "last_logon": logon.astimezone(BKK).strftime("%-d/%-m/%Y %H:%M") if logon else "-",
         "account_enabled": enabled,
-        "locked": locked,
-        "lockout_time": lockout_dt.astimezone(BKK).strftime("%-d/%-m/%Y %H:%M") if (locked and lockout_dt) else None,
     }
 
 
