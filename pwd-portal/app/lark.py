@@ -10,10 +10,9 @@ from . import config
 log = logging.getLogger("lark")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# img_key ของรูปกล่อง 2 อัน (ใส่ให้แล้ว)
+# img_key ของรูปกล่องวิธีเปลี่ยนรหัส (Ctrl+Alt+Delete)
 # ─────────────────────────────────────────────────────────────────────────────
-M1_IMG_KEY = "img_v3_02134_84b8c7c2-2b31-47dc-be5c-5fc1dfb1bbhu"   # รูปกล่องวิธีที่ 1
-M2_IMG_KEY = "img_v3_02135_b7980f3c-ee57-4e5c-92df-0d19e77fb3hu"   # รูปกล่องวิธีที่ 2
+M2_IMG_KEY = "img_v3_02134_80f08932-20e1-4d29-a8e6-110cf68a27hu"
 # ─────────────────────────────────────────────────────────────────────────────
 
 _token = {"value": None, "exp": 0}
@@ -61,36 +60,31 @@ def open_id_by_email(email: str):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# สร้างการ์ด (โครงสร้าง 1.0 — รองรับทุกเวอร์ชัน Lark)
+# สร้างการ์ด (มีเฉพาะวิธี Ctrl+Alt+Delete)
 # ─────────────────────────────────────────────────────────────────────────────
 def _intro(name, days, expiry_date):
     return (f"เรียน คุณ{name}\n\n"
             f"รหัสผ่าน **Active Directory** จะหมดอายุใน **{days} วัน** (วันที่ {expiry_date})\n"
-            f"รหัสนี้ใช้เข้า 💻 คอมพิวเตอร์ · 📶 WiFi ออฟฟิศ · 🔐 VPN — กรุณาเปลี่ยนก่อนหมดอายุ\n\n"
-            f"**เปลี่ยนได้ 2 วิธี เลือกอันที่สะดวก** 👇")
+            f"รหัสนี้ใช้เข้า 💻 คอมพิวเตอร์ · 📶 WiFi ออฟฟิศ · 🔐 VPN — กรุณาเปลี่ยนก่อนหมดอายุ")
+
+
+def _m2_fallback():
+    return ("**วิธีเปลี่ยนรหัสผ่านที่เครื่อง (Ctrl + Alt + Delete)**\n"
+            "📍 ใช้ได้เฉพาะคอมในเครือข่ายออฟฟิศ (LAN, WiFi บริษัท หรือเปิด VPN)\n\n"
+            "1. กดสามปุ่มพร้อมกัน แล้วเลือก **Change a password**\n"
+            "2. ใส่รหัสเดิม → รหัสใหม่ → ยืนยันรหัสใหม่\n"
+            "3. กด Enter เสร็จเลย ใช้รหัสใหม่กับทุกระบบได้ทันที")
 
 
 def _card(name: str, days: int, expiry_date: str) -> dict:
-    portal = config.PORTAL_URL
     elements = [
         {"tag": "div", "text": {"tag": "lark_md", "content": _intro(name, days, expiry_date)}},
     ]
-    # กล่องวิธีที่ 1 (รูป) + ปุ่มจริง
-    if M1_IMG_KEY:
-        elements.append({"tag": "img", "img_key": M1_IMG_KEY, "mode": "fit_horizontal",
-                         "alt": {"tag": "plain_text", "content": "วิธีที่ 1: กดลิงก์เปลี่ยนรหัสผ่าน"}})
-    elements.append({"tag": "action", "actions": [
-        {"tag": "button", "type": "primary",
-         "text": {"tag": "plain_text", "content": "เปลี่ยนรหัสผ่าน"}, "url": portal}]})
-    # กล่องวิธีที่ 2 (รูป)
     if M2_IMG_KEY:
         elements.append({"tag": "img", "img_key": M2_IMG_KEY, "mode": "fit_horizontal",
-                         "alt": {"tag": "plain_text", "content": "วิธีที่ 2: กด Ctrl Alt Delete"}})
+                         "alt": {"tag": "plain_text", "content": "วิธีเปลี่ยนรหัสผ่านด้วย Ctrl Alt Delete"}})
     else:
-        elements.append({"tag": "div", "text": {"tag": "lark_md",
-            "content": "**2️⃣ กด Ctrl + Alt + Delete ที่เครื่อง**\n📍 ใช้ได้เฉพาะคอมในเครือข่ายออฟฟิศ\n"
-                       "1. กดสามปุ่มพร้อมกัน เลือก Change a password\n2. ใส่รหัสเดิม → ใหม่ → ยืนยัน\n3. กด Enter"}})
-
+        elements.append({"tag": "div", "text": {"tag": "lark_md", "content": _m2_fallback()}})
     return {
         "config": {"wide_screen_mode": True},
         "header": {
